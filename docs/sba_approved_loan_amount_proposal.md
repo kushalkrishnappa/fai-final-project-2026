@@ -119,8 +119,8 @@ Validation:
 The smallest clean rewrite is:
 
 1. Change input file and target:
-   - from `data/train.csv` and `Loan Sanction Amount (USD)`
-   - to `data/SBAnational.csv` and `GrAppv`
+   - from `src/data/train.csv` and `Loan Sanction Amount (USD)`
+   - to `src/data/SBAnational.csv` and `GrAppv`
 2. Replace current manual preprocessing with an SBA preprocessing function.
 3. Replace label encoding with sklearn pipelines.
 4. Replace `LinearRegression` with `Ridge`.

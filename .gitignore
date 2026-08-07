@@ -25,6 +25,11 @@ ENV/
 */.ipynb_checkpoints/*
 profile_default/
 ipython_config.py
+.ipython/
+.jupyter/
+.jupyter-data/
+.jupyter-runtime/
+.matplotlib-cache/
 
 # Environment / secrets
 .env
@@ -40,6 +45,12 @@ ipython_config.py
 *.onnx
 mlruns/
 wandb/
+catboost_info/
+
+# Large local SBA data files
+src/data/SBAnational.csv
+src/data/sba_cleaned.csv
+src/data/preprocessed.csv
 
 # Editors / IDEs
 .vscode/
