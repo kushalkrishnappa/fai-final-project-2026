@@ -1,0 +1,9 @@
+Target Encoded Column,Features Added
+Bank,3
+City,3
+Zip3,3
+NAICS_3digit,3
+NAICS_sector,3
+State,3
+BankState,3
+State_NAICS,3

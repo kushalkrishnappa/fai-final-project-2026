@@ -12,5 +12,6 @@ tensorflow[and-cuda]==2.21.0
 xgboost==3.2.0
 lightgbm==4.7.0
 catboost==1.2.10
+optuna==4.9.0
 reportlab==5.0.0
 python-docx==1.2.0
