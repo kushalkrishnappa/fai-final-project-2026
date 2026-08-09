@@ -1,0 +1,56 @@
+[
+  {
+    "key": "khandani-2010",
+    "title": "Consumer credit-risk models via machine-learning algorithms",
+    "authors": "A. E. Khandani, A. J. Kim, A. W. Lo",
+    "venue": "Journal of Banking & Finance",
+    "year": 2010,
+    "url": "https://www.sciencedirect.com/science/article/abs/pii/S0378426610002372",
+    "claim": "Machine-learning approaches that combine applicant transactional and credit-bureau-style data have been shown to meaningfully improve forecasts of consumer credit delinquency and default over traditional scoring methods, motivating this project's use of ML classifiers such as Random Forest and Gradient Boosting to predict loan sanction outcomes from applicant financial data."
+  },
+  {
+    "key": "lessmann-2015",
+    "title": "Benchmarking state-of-the-art classification algorithms for credit scoring: An update of research",
+    "authors": "S. Lessmann, B. Baesens, H.-V. Seow, L. C. Thomas",
+    "venue": "European Journal of Operational Research",
+    "year": 2015,
+    "url": "https://www.sciencedirect.com/science/article/abs/pii/S0377221715004208",
+    "claim": "A large-scale benchmark of 41 classifiers across eight real-world credit scoring datasets found that more sophisticated classifiers and ensemble methods consistently outperform simpler baselines like logistic regression, which motivates comparing multiple classifiers before selecting the model used for the loan-approval (classification) stage in this project."
+  },
+  {
+    "key": "grinsztajn-2022",
+    "title": "Why do tree-based models still outperform deep learning on typical tabular data?",
+    "authors": "L. Grinsztajn, E. Oyallon, G. Varoquaux",
+    "venue": "Advances in Neural Information Processing Systems (NeurIPS), Datasets and Benchmarks Track",
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2207.08815",
+    "claim": "Extensive benchmarking shows tree-based ensembles such as Random Forest and XGBoost remain state-of-the-art on medium-sized tabular datasets and outperform deep neural networks, which motivates trying tree ensembles before a neural network on this project's tabular applicant-financial-data prediction task."
+  },
+  {
+    "key": "lundberg-2017",
+    "title": "A Unified Approach to Interpreting Model Predictions",
+    "authors": "S. M. Lundberg, S.-I. Lee",
+    "venue": "Advances in Neural Information Processing Systems (NeurIPS)",
+    "year": 2017,
+    "url": "https://arxiv.org/abs/1705.07874",
+    "claim": "SHAP (SHapley Additive exPlanations) provides a theoretically grounded, unified framework for attributing each feature's contribution to an individual prediction, which is why this project uses SHAP values to interpret which applicant features drive the classifier's and regressor's loan sanction predictions."
+  },
+  {
+    "key": "cragg-1971",
+    "title": "Some Statistical Models for Limited Dependent Variables with Application to the Demand for Durable Goods",
+    "authors": "J. G. Cragg",
+    "venue": "Econometrica",
+    "year": 1971,
+    "url": "https://www.econometricsociety.org/publications/econometrica/1971/09/01/some-statistical-models-limited-dependent-variables-application",
+    "claim": "Cragg's two-part (hurdle) model formalizes separating the decision of whether an outcome is zero from the decision of how large it is when positive, which is the statistical foundation for this project's two-stage design: a classifier that predicts whether an applicant is sanctioned any loan amount at all, followed by a regressor that predicts the amount for those who are."
+  },
+  {
+    "key": "fuster-2022",
+    "title": "Predictably Unequal? The Effects of Machine Learning on Credit Markets",
+    "authors": "A. Fuster, P. Goldsmith-Pinkham, T. Ramadorai, A. Walther",
+    "venue": "The Journal of Finance",
+    "year": 2022,
+    "url": "https://onlinelibrary.wiley.com/doi/abs/10.1111/jofi.13090",
+    "claim": "Introducing machine learning into credit-underwriting decisions has been shown to change and, in some cases, amplify disparities in loan outcomes across demographic groups relative to traditional models, which motivates checking this project's model for differential treatment across the Gender attribute present in the loan sanction dataset."
+  }
+]

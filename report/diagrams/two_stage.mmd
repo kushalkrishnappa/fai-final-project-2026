@@ -1,0 +1,6 @@
+flowchart LR
+    A[All 29,322 applications] --> B{Stage 1<br/>Any amount sanctioned?}
+    B -- No --> C[Predict 0]
+    B -- Yes --> D[Stage 2<br/>Predict the amount]
+    C --> E[End to end score<br/>all test rows]
+    D --> E

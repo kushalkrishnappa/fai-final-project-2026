@@ -1,0 +1,15 @@
+flowchart LR
+    X[19 training columns]
+
+    X --> A1["Continuous columns (6)<br/>Age, Income, Loan Amount Request,<br/>Current Loan Expenses, Credit Score, Property Price"]
+    A1 --> A2[Percentile clip] --> A3[Median impute] --> A4[Standard scale]
+
+    X --> B1["Discrete columns (3)<br/>Dependents, No. of Defaults, Co-Applicant"]
+    B1 --> B2[Median impute] --> B3[Standard scale]
+
+    X --> C1["Categorical columns (10)<br/>Gender, Income Stability, Profession,<br/>Type of Employment, Location, Expense Type 1,<br/>Expense Type 2, Has Active Credit Card,<br/>Property Location, Property Type"]
+    C1 --> C2[Most frequent impute] --> C3["One-hot encode<br/>47 output columns"]
+
+    A4 --> F["Final feature matrix<br/>56 features"]
+    B3 --> F
+    C3 --> F
