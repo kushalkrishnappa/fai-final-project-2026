@@ -1,128 +1,58 @@
 # Loan Sanction Amount Estimation
 
-A two-stage pipeline for the LendWise loan dataset. Stage 1 is a classifier deciding
-whether an application is sanctioned at all; Stage 2 is a regressor predicting the
-amount, run only on applications Stage 1 approves.
+## Objective
 
-## The authoritative file
+A bank almost never sanctions the exact figure an applicant asks for, and the applicant
+usually finds out only weeks into the process. This project
+(`src/LoanSanctionAmountEstimation.ipynb`) estimates that figure up front from details
+the applicant already knows, such as income, credit score, existing loan expenses and
+property price. It is an early estimate, not a lending decision.
 
-`src/LoanSanctionAmountEstimation.ipynb` is the single source of truth.
+1. A model that takes a single application and predicts the sanctioned amount in US
+   dollars, together with whether any amount is sanctioned at all.
+2. An honest score for it, measured on applications it never saw during training and
+   reported end to end rather than on whichever subset flatters each stage.
+3. A record of what the raw file contained and which parts of it were unusable.
 
-**Nothing generates it.** It was previously assembled by `scripts/build_notebook.py`
-from cell definitions in `scripts/nbcells.py`; both were removed once the notebook was
-complete, so hand edits can no longer be silently regenerated away. Those files remain
-in git history if the cell sources are ever needed:
+## Approach
 
-```bash
-git show b75e9b3:scripts/nbcells.py
-```
+![The two stage design](report/figures/two_stage.png)
 
-Edit the notebook in Jupyter, or with the `NotebookEdit` tool.
+The target column stacks two different questions: is anything sanctioned at all, and if
+so how much. 26.8 percent of applications are refused outright and their sanctioned
+amount is exactly 0, which records a rejection rather than a very small loan. A single
+regressor fitted over the whole column has to aim at 0 for a quarter of the rows and at
+a large amount for the rest, so it settles in between and serves neither, predicting
+small positive amounts for refused applicants while pulling the approved predictions
+down. Splitting the problem gives each stage one question to answer. At prediction time
+they chain: an application stage 1 marks as refused is reported as 0 and never reaches
+the regressor.
 
-## The hard rule
+## Stage 1, is anything sanctioned at all
 
-**Restart Kernel and Run All Cells must be the last thing you do before saving.**
+A binary classifier on every application, scored on F1 so refusals cannot be ignored.
+Only applications it approves reach stage 2.
 
-`scripts/verify_notebook.py` requires the stored execution counts to be exactly
-`1..N` in document order. A clean restart-and-run-all satisfies that. These do not:
+- **Dummy (most frequent)**, always predicts approved, the bar a real model has to clear.
+- **Logistic regression**, tuned over the regularisation strength `C`.
+- **Random forest**, tuned over tree depth and minimum leaf size.
+- **Gradient boosting**, tuned over learning rate and tree depth.
 
-- Plain "Run All" without a restart, which continues the counter from the previous
-  session and starts at `N+1`.
-- Re-running a single cell after a full run, which bumps that one cell's count.
-- Inserting a new cell and running only it.
+## Stage 2, how much
 
-A full run takes roughly 12 to 15 minutes.
+A regressor for the sanctioned amount in USD, fitted and scored on approved rows only.
 
-## Commands
+- **Dummy (mean)**, always predicts the mean sanctioned amount, the bar to clear.
+- **Linear regression**, untuned, the simple model the rest have to justify improving on.
+- **PCA then linear regression**, the same fit on 10 principal components.
+- **Random forest**, tuned over tree count, depth, leaf size and the feature sampling rule.
+- **Gradient boosting**, tuned over learning rate, depth, tree count and subsample fraction.
+- **Neural network**, a PyTorch MLP with dropout and batch normalisation on a standardised
+  target.
 
-```bash
-# Verify the notebook. Expect: 0 failure(s), 39 code cells, 69 markdown cells
-~/.pyenv/versions/pytorch/bin/python scripts/verify_notebook.py
+## Data
 
-# Build the PDF. Renders report/diagrams/*.mmd via mmdc, then pandoc/xelatex.
-scripts/build_report.sh
-```
-
-The notebook runs with the working directory set to `src/`, which is why it writes
-figures to `../report/figures/`.
-
-Dependencies are in `requirements.txt`. The kernel is the pyenv `pytorch`
-environment (Python 3.14.4). TensorFlow has no wheel for this Python version, so
-the neural network is PyTorch.
-
-## What the verifier enforces
-
-`scripts/verify_notebook.py` is now the only automated guard on the notebook. It
-checks five things:
-
-1. No cell has an error output.
-2. Execution counts are exactly `1..N` in order.
-3. No unfilled `{{MARKER}}` placeholders in markdown.
-4. No banned constructs in code: `LabelEncoder` (ordinal encoding of nominal
-   columns), `max_features='auto'` (removed in sklearn 1.3), `tensorflow` (no
-   cp314 wheel), `filterwarnings("ignore")` (hides failed fits).
-5. Markdown voice rules: no em-dash, no `we`/`our`, no standalone `I`. The `I`
-   check allows `Type I`, `Stage I`, `Grade I`, and `Phase I`.
-
-## The References cell
-
-Notebook cell 5 is hand-maintained. It used to be generated from
-`scripts/references.json`, which is kept as the source record for the entries.
-
-Each entry renders in this format:
-
-```
-{n}. **{title}.** {authors}. *{venue}*, {year}. <{url}>
-```
-
-The trailing period is omitted when the title already ends in `?`, `!`, or `.`.
-
-**Write Su-In Lee's name out in full. Never `S.-I. Lee`.** The generator carried a
-fixup for exactly this, because the abbreviated initial trips the verifier's
-standalone-`I` check. The same applies to any future author whose initial is `I`.
-
-## Reproducibility
-
-`RANDOM_STATE = 42`, with both `np.random.seed` and `torch.manual_seed` set. Re-runs
-reproduce results to roughly 15 significant figures.
-
-`RETRAIN = False` loads the tuned Stage 1 models from `models/*.joblib`. `.gitignore`
-excludes `*.joblib`, so those are not committed and a fresh clone refits them on the
-first run instead of loading the cache.
-
-## Known debt
-
-Recorded here so it is not rediscovered as a surprise.
-
-- **`report/Report.md` has roughly 150 hand-typed numbers and no automated
-  cross-check.** A `scripts/extract_results.py` once scraped notebook output into
-  `report/results.json` toward that goal, but the consumer that would have
-  substituted those values into the report was never built, so nothing ever read
-  the JSON. Both were removed rather than left as a false guarantee. Around 40 of
-  the report's numbers (`352/168/177`, `1,573`, `8.3 percent`, `71.23`, `0.0028`,
-  `epoch 25/50`) were never captured in the JSON in the first place.
-- **`report/stage2_results.csv` is write-only.** Notebook cell 90 writes it and
-  nothing reads it. Removing it would require a notebook edit plus a full re-run.
-- **Re-run blast radius.** The 94.81 percent error-decomposition figure is restated
-  by hand in five places in `Report.md` (lines 303-306, 347, 383, 388-390, 410-411),
-  and the Stage 1 AUCs in three (lines 197, 220). Any change that moves those
-  numbers has to be propagated by hand.
-- **Seven notebook figures are unreferenced by the report**: `missingness.png`,
-  `target_distribution.png`, `correlation_heatmap.png`, `nn_loss.png`,
-  `error_decomposition.png`, `shap_stage1.png`, `shap_stage2.png`. Only
-  `confusion_matrix.png` and `roc_curves.png` are load-bearing from the notebook.
-
-## Layout
-
-| Path | Contents |
-|---|---|
-| `src/LoanSanctionAmountEstimation.ipynb` | The authoritative notebook |
-| `src/data/` | `train.csv`, `preprocessed.csv` |
-| `models/` | Cached fitted estimators, gitignored |
-| `report/Report.md` | The written report, hand-maintained |
-| `report/figures/` | Figures, written by the notebook and by `mmdc` |
-| `report/diagrams/` | Mermaid sources for the two pipeline diagrams |
-| `scripts/verify_notebook.py` | The notebook guard |
-| `scripts/build_report.sh` | Diagram render plus pandoc build |
-| `scripts/references.json` | Source record for the References cell |
-| `docs/superpowers/` | Historical spec and plan for the original build |
+Kaggle, "Predict Loan Amount Data":
+<https://www.kaggle.com/datasets/phileinsophos/predict-loan-amount-data>. The file used
+is `train.csv`, kept at `src/data/train.csv`: 30,000 applications in 24 columns, target
+`Loan Sanction Amount (USD)`.
