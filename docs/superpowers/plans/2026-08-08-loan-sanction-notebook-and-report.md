@@ -1,5 +1,15 @@
 # Loan Sanction Amount Estimation Implementation Plan
 
+> **Status: complete and superseded. Kept as a historical record, not as current
+> instructions.** The Task 10 checkpoint has been passed, so per the note on the
+> generator below, `src/LoanSanctionAmountEstimation.ipynb` is now authoritative.
+> `scripts/nbcells.py` and `scripts/build_notebook.py` have been deleted, so the
+> notebook can no longer be regenerated over hand edits. `scripts/extract_results.py`
+> and `report/results.json` have also been deleted: the `scripts/fill_narration.py`
+> consumer described in the File Structure table was never built, so nothing ever
+> read that JSON and the "no number typed by hand" rule below was never enforced.
+> `README.md` at the repo root documents the workflow that actually applies now.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build `src/LoanSanctionAmountEstimation.ipynb` and `report/Report.pdf`, fixing the 19 defects listed in the spec and adding a two-stage model that measures end to end error honestly.
