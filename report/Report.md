@@ -84,9 +84,8 @@ predictor.
 The work runs on a Python 3.14.4 kernel, with pandas 2.3.3 and numpy 2.4.6 for
 data handling and scikit-learn 1.9.0 for every model except the network, so that
 preprocessing, grid search and metrics all come from one library. The network is
-written in PyTorch 2.9.1, because no TensorFlow wheel is published for Python
-3.14.4. Attribution uses shap 0.52.0 and plots matplotlib 3.11.0 and seaborn
-0.13.2.
+written in PyTorch 2.9.1. Attribution uses shap 0.52.0 and plots matplotlib
+3.11.0 and seaborn 0.13.2.
 
 The data is the Kaggle dataset "Predict Loan Amount Data", available at
 <https://www.kaggle.com/datasets/phileinsophos/predict-loan-amount-data>. The
@@ -111,10 +110,10 @@ rather than a blank.
 
 **One column is an exact duplicate of another.** `Property Age` is not an age. It
 is a copy of `Income (USD)`, identical to the cent in all 25,150 rows where both
-values are present, giving a correlation of exactly 1.000000. A match that exact
-only happens when one column was copied from the other, so `Property Age` was
-dropped, along with `Name` and `Property ID`, which are nearly unique per row and
-can only be memorised. That leaves 20 columns, 19 of them inputs.
+values are present, so it carries nothing beyond what `Income (USD)` already
+holds. `Property Age` was dropped, along with `Name` and `Property ID`, which are
+nearly unique per row and can only be memorised. That leaves 20 columns, 19 of
+them inputs.
 
 **Over a quarter of the target column is not an amount.** 7,865 applications,
 26.8 percent, have a sanctioned amount of exactly 0, against 21,457 that receive
@@ -351,9 +350,10 @@ an approval with a dollar figure attached than the reverse.
 ## 5.2 Limitations
 
 **The dataset itself is not fully trustworthy.** It is a Kaggle extract with no
-documented provenance, and the audit found `Property Age` to be a column labelled
-and shipped as something it is not. One confirmed error of that kind, found only
-because it was checked, is reason to treat the rest of the file as unverified.
+documented provenance, and Section 3.2 records `-999` used as an undeclared
+placeholder inside columns that read as complete on a raw null count. Nothing in
+the file declares that convention, and it was found only because it was checked,
+which is reason to treat the rest of the file as unverified.
 
 **Stage 2 is close to a one-feature problem.** This is set out in Section 4.2 and
 is the single most important caveat on the headline scores.
